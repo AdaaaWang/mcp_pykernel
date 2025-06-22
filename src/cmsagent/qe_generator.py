@@ -2,7 +2,9 @@ import os
 from mcp.server.fastmcp import FastMCP
 from typing import Dict, TypeAlias
 
+import os
 from pymatgen.io.ase import AseAtomsAdaptor
+from pymatgen.symmetry.bandstructure import HighSymmKpath
 from ase.geometry.dimensionality import analyze_dimensionality
 from ase.io.espresso import write_espresso_in
 from mp_api.client import MPRester
@@ -10,6 +12,8 @@ from mcp.types import TextContent
 from emmet.core.symmetry import CrystalSystem
 
 from enum import Enum
+
+from cmsagent.tools.qe_file_tools import parse_qe_output
 
 # Create the MCP server object
 mcp = FastMCP()
@@ -214,9 +218,9 @@ PWInputTypes: TypeAlias = str | float | int | bool
 @mcp.tool()
 def write_pw_input(
         mat_id: str,
-        fname:str,
+        fname: str,
         prefix: str,
-        # pseudofiles: dict,
+        kpt_sampling: list[int] | None = None,
         calculation: str = "scf",
         verbosity: str = "low",
         restart_mode: str = "from_scratch",
@@ -292,6 +296,13 @@ def write_pw_input(
         material id from the material project database.
     fname : str
         Name of the quantum espresso input file to write
+    pseudofiles : dict[str, str]
+        Dictionary mapping element to the psedopotential file
+    kpt_sampling : list(str), optional
+        Uniform kpt sampling grid. Example: [3,4,5] is
+        to have 3 kpts along x, 4 along y and 5 along z.
+        Default to None (Gamma only). If mode is bands
+        this will be ignored.
 
     The rest of the input parameters are pw.x input parameters.
     Here's what they look like:
@@ -368,9 +379,16 @@ def write_pw_input(
     cell_dofree: str | None = None
 
 
-    Please search the pw.x document and insert input as necessary (leave them
+    Please search the pw.x documentation: https://www.quantum-espresso.org/Doc/INPUT_PW.html
+    and insert input as necessary (leave them
     as None if there is no need to change). Ask user for input if there is
     something that is unclear.
+
+    Return
+    ------
+    path_to_pw_input_file : str
+        path to the input file for pw.x
+
     """
     """
     def obtain_pw_inputs_dictionary() -> Dict[str, PWInputTypes]:
@@ -384,13 +402,26 @@ def write_pw_input(
     mat = mpr.materials.search(mat_id)[0]
     atoms = AseAtomsAdaptor.get_atoms(mat.structure)
     psep_dict = get_pseudopotential(mat.elements)
-    write_espresso_in(
-        fname,
-        atoms,
-        locals(),
-        pseudopotentials=psep_dict,
-        crystal_coordinates=True,
-    )
+    
+    if calculation == "bands":
+        write_espresso_in(
+            fname,
+            atoms,
+            locals(),
+            pseudopotentials=psep_dict,
+            kpts=HighSymmKpath(mat.structure).kpath,
+            crystal_coordinates=True,
+        )
+    else:
+        write_espresso_in(
+            fname,
+            atoms,
+            locals(),
+            pseudopotentials=psep_dict,
+            kpts=kpt_sampling,
+            crystal_coordinates=True,
+        )
+    return TextContent(type="text", text=os.path.join(os.getcwd(), fname))
 
 pseudopotentials: Dict[str, str] = {}
 @mcp.tool()
@@ -421,11 +452,24 @@ def get_pseudopotential(elements: list) -> Dict:
         elename = ele.name
         jobpseudopotential[elename] = pseudopotentials[elename][0] # temp: use the first one
     return jobpseudopotential
-        
+
+@mcp.tool()
+def parse_pw_output_tool(filename: str) -> str:
+    """
+    Parse the Quantum ESPRESSO output file.
+    Args:
+        filename (str): Path to the Quantum ESPRESSO output file.
+    Returns:
+        tuple: A dictionary containing the success status, results, and convergence information.
+    If no results are found, it returns a warning message with the file content.
+    If results are found, it returns a dictionary with the results and convergence status.
+    """
+    result = parse_qe_output(filename)
+    return result
 
 def main():
     mcp.run('stdio')
 
 if __name__ == "__main__":
-    #main()
+    main()
     print("Ready")
