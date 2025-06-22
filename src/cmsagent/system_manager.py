@@ -384,7 +384,7 @@ def write_pw_input(
         eopreg: float | None = None,
         edir: int | None = None,
         cell_dofree: str | None = None) -> str:
-    """ Write input for for the quantum espresso pw.x. Please make sure you know which directory you are writing to.
+    """ Write input for for the Quantum ESPRESSO pw.x. Please make sure you know which directory you are writing to.
     If not, ask the user to provide the working directory on the local and remote server.
 
     Parameters
@@ -392,7 +392,7 @@ def write_pw_input(
     mat_id : str
         material id from the material project database.
     fname : str
-        Name of the quantum espresso input file to write
+        Name of the Quantum ESPRESSO input file to write.
     pseudofiles : dict[str, str]
         Dictionary mapping element to the psedopotential file
     kpt_sampling : list(str), optional
