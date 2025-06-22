@@ -37,6 +37,7 @@ async def start(init: str) -> list:
     and then use the SCP tool to transfer files to the remote server.
     When you need to read a very large file (for example, the output file of scientific computation software), 
     please use the SCP tool to download the file to the local directory first.
+    When you need to work with files, please ask the user to provide the working directory on the remote server and the local machine.
     """
     return 0
 
@@ -71,6 +72,7 @@ async def ssh_info_init_tool(host: str, username: str, key_path: str) -> str:
 async def change_remote_working_directory_tool(directory: str) -> str:
     """
     Change the working directory on the remote server.
+    When you need to work with files remotely, please ask the user to provide the working directory on the remote server.
     
     Args:
         directory: The new working directory path.
@@ -89,6 +91,7 @@ async def change_remote_working_directory_tool(directory: str) -> str:
 async def change_local_working_directory_tool(directory: str) -> str:
     """
     Change the working directory on the local machine.
+    When you need to work with files locally, please ask the user to provide the working directory on the local machine.
     
     Args:
         directory: The new working directory path.
@@ -307,7 +310,6 @@ def search_material(
     """ 
     return qetool.search_material(**locals())
 
-
 @mcp.tool()
 def write_pw_input(
         mat_id: str,
@@ -381,14 +383,18 @@ def write_pw_input(
         eopreg: float | None = None,
         edir: int | None = None,
         cell_dofree: str | None = None) -> str:
-    """ Write input for for the quantum espresso pw.x
+    """ Write input for for the Quantum ESPRESSO pw.x. Please make sure you know which directory you are writing to.
+    If not, ask the user to provide the working directory on the local and remote server.
 
     Parameters
     ----------
     mat_id : str
         material id from the material project database.
     fname : str
-        Name of the quantum espresso input file to write
+
+        Name of the Quantum ESPRESSO input file to write.
+    pseudofiles : dict[str, str]
+        Dictionary mapping element to the psedopotential file
     kpt_sampling : list(str), optional
         Uniform kpt sampling grid. Example: [3,4,5] is
         to have 3 kpts along x, 4 along y and 5 along z.
@@ -494,6 +500,7 @@ async def load_pseudopotentials_ls_results(files: str) -> TextContent:
     """
     For a given string as output of the 'ls pseudopotential_folder',
     parse the string to get the pseudopotential files.
+    Pleas ask the user to provide the location of the pseudopotential files.
     
     Args:
         files: Output of 'ls directory_path'.
@@ -501,6 +508,21 @@ async def load_pseudopotentials_ls_results(files: str) -> TextContent:
         'Ag_ONCV_PBE-1.0.upf     Cl_ONCV_PBE-1.2.upf     Hg_ONCV_PBE-1.0.upf ...'
     """
     return qetool.load_pseudopotentials_ls_results(**locals())
+
+@mcp.tool()
+def plot_struct(mat_id: str, dir: int):
+    """
+    Plot the structure along direction
+
+    Parameters
+    ----------
+    mat_id : str
+        material id from the material project database.
+    dir : int
+        direction of camera 0 = x, 1 = y, 2 = z, 3 = rotate at (45,45,45)
+    """
+
+    return qetool.plot_struct(**locals())
 
 
 # This is the main entry point for your server
