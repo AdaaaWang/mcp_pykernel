@@ -53,10 +53,13 @@ async def ssh_info_init(
     
     return f"SSH configuration: {username}@{host} (key: {key_path})"
 
+
 @mcp.tool()
 async def run_ssh_command(command: str, timeout: int = 30) -> dict:
     """
     Run a command on the remote server via SSH.
+    Please optimize the command to make the number of calls to this tool as few as possible.
+    
     Args:
         command: bash command to execute on the remote server, in a string.
         timeout: timeout (seconds), default is 30 seconds
@@ -79,7 +82,7 @@ async def run_ssh_command(command: str, timeout: int = 30) -> dict:
         '-o', 'StrictHostKeyChecking=no',
         '-o', 'ConnectTimeout=10',
         ssh_config['host'],
-        '\"'+command+'\"'
+        command+'; exit',
     ]
     
     try:
