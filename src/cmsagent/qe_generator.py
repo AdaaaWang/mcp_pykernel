@@ -401,8 +401,6 @@ def write_pw_input(
     #if calculation == "vc-relax" or calculation == "relax":
     mat = mpr.materials.search(mat_id)[0]
     atoms = AseAtomsAdaptor.get_atoms(mat.structure)
-<<<<<<< HEAD:src/cmsagent/qe_generator.py
-
     if mode == "bands":
         write_espresso_in(
             fname,
@@ -424,20 +422,7 @@ def write_pw_input(
         )
     return TextContent(type="text", text=os.path.join(os.getcwd(), filename))
 
-
-def Kpath(klist, mat_id):
-    """ Determine the kpath for scf/nscf calculation"""
-
     
-=======
-    print(locals())
-    write_espresso_in(
-        fname,
-        atoms,
-        locals(),
-        pseudopotentials=pseudofiles,
-        crystal_coordinates=True,
-    )
 
 @mcp.tool()
 def parse_pw_output_tool(filename: str) -> str:
@@ -452,7 +437,6 @@ def parse_pw_output_tool(filename: str) -> str:
     """
     result = parse_qe_output(filename)
     return result
->>>>>>> 25af4f51e0ba8633be6aadc987304da7a6b1155c:src/cmsagent/structuresearch.py
 
 def main():
     mcp.run('stdio')
