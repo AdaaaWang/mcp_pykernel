@@ -12,6 +12,8 @@ from emmet.core.symmetry import CrystalSystem
 
 from enum import Enum
 
+from cmsagent.tools.qe_file_tools import parse_qe_output
+
 # Create the MCP server object
 mcp = FastMCP()
 
@@ -377,7 +379,8 @@ def write_pw_input(
     cell_dofree: str | None = None
 
 
-    Please search the pw.x document and insert input as necessary (leave them
+    Please search the pw.x documentation: https://www.quantum-espresso.org/Doc/INPUT_PW.html
+    and insert input as necessary (leave them
     as None if there is no need to change). Ask user for input if there is
     something that is unclear.
 
@@ -398,6 +401,7 @@ def write_pw_input(
     #if calculation == "vc-relax" or calculation == "relax":
     mat = mpr.materials.search(mat_id)[0]
     atoms = AseAtomsAdaptor.get_atoms(mat.structure)
+<<<<<<< HEAD:src/cmsagent/qe_generator.py
 
     if mode == "bands":
         write_espresso_in(
@@ -425,6 +429,30 @@ def Kpath(klist, mat_id):
     """ Determine the kpath for scf/nscf calculation"""
 
     
+=======
+    print(locals())
+    write_espresso_in(
+        fname,
+        atoms,
+        locals(),
+        pseudopotentials=pseudofiles,
+        crystal_coordinates=True,
+    )
+
+@mcp.tool()
+def parse_pw_output_tool(filename: str) -> str:
+    """
+    Parse the Quantum ESPRESSO output file.
+    Args:
+        filename (str): Path to the Quantum ESPRESSO output file.
+    Returns:
+        tuple: A dictionary containing the success status, results, and convergence information.
+    If no results are found, it returns a warning message with the file content.
+    If results are found, it returns a dictionary with the results and convergence status.
+    """
+    result = parse_qe_output(filename)
+    return result
+>>>>>>> 25af4f51e0ba8633be6aadc987304da7a6b1155c:src/cmsagent/structuresearch.py
 
 def main():
     mcp.run('stdio')
