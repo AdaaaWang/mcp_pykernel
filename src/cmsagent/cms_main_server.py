@@ -1,11 +1,7 @@
 import os
-import asyncio
 from mcp.server.fastmcp import FastMCP
-from mcp.types import TextContent, ImageContent, BlobResourceContents
+from mcp.types import TextContent
 import logging
-import base64
-import subprocess
-import datetime
 from typing import Literal
 
 from cmsagent.tools.ssh_tools import ssh_info_init, run_ssh_command, run_scp_transfer
