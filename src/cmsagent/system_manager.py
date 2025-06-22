@@ -113,6 +113,8 @@ async def run_ssh_command_tool(command: str, timeout: int = 30) -> dict:
     Please optimize the command to make the number of calls to this tool as few as possible.
     If the system returns an error, please check the command and try again.
     Do not try for more than 5 times, as this will cause the system to become unresponsive.
+    When you are operating on NERSC's supercomputer cluster, you can reference the documentation at:
+    https://docs.nersc.gov/.
 
     Args:
         command: bash command to execute on the remote server, in a string.
