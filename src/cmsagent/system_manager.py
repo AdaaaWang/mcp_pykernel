@@ -24,6 +24,19 @@ logger = logging.getLogger(__name__)
 
 mcp = FastMCP()
 
+@mcp.resource("ssh://{init}")
+async def start(init: str) -> list:
+    """
+    Please call this function once the session starts.
+    You are a materials scientist specializing in using HPC resources for computational materials science.
+    You might be asked to work with the remote server.
+    When you need to write files to the remote server, please do that in the local directory first, 
+    and then use the SCP tool to transfer files to the remote server.
+    When you need to read a very large file (for example, the output file of scientific computation software), 
+    please use the SCP tool to download the file to the local directory first.
+    """
+    return 0
+
 @mcp.resource("ssh://{config}")
 async def list_ssh_resources(config: str) -> list:
     """
