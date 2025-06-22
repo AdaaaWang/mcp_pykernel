@@ -12,6 +12,7 @@ ssh_config = {
     'username': None, 
     'key_path': None
 }
+WORK_DIR = "/global/cfs/cdirs/m4480/MCP_example"
 
 # Set up logging (this just prints messages to your terminal for debugging)
 logging.basicConfig(
@@ -22,6 +23,16 @@ logger = logging.getLogger(__name__)
 
 # Create the MCP server object
 mcp = FastMCP()
+
+@mcp.resource()
+async def list_resources() -> list:
+    """
+    List available resources for the MCP server.
+    """
+    return {
+        'SSH Configuration': ssh_config, 
+        'Remote Work Directory': WORK_DIR,
+        }
 
 # Here's where you define your tools (functions the AI can use)
 @mcp.tool()
@@ -59,7 +70,9 @@ async def run_ssh_command(command: str, timeout: int = 30) -> dict:
     """
     Run a command on the remote server via SSH.
     Please optimize the command to make the number of calls to this tool as few as possible.
-    
+    If the system returns an error, please check the command and try again.
+    Do not try for more than 5 times, as this will cause the system to become unresponsive.
+
     Args:
         command: bash command to execute on the remote server, in a string.
         timeout: timeout (seconds), default is 30 seconds
