@@ -37,6 +37,7 @@ async def start(init: str) -> list:
     and then use the SCP tool to transfer files to the remote server.
     When you need to read a very large file (for example, the output file of scientific computation software), 
     please use the SCP tool to download the file to the local directory first.
+    When you need to work with files, please ask the user to provide the working directory on the remote server and the local machine.
     """
     return 0
 
@@ -71,6 +72,7 @@ async def ssh_info_init_tool(host: str, username: str, key_path: str) -> str:
 async def change_remote_working_directory_tool(directory: str) -> str:
     """
     Change the working directory on the remote server.
+    When you need to work with files remotely, please ask the user to provide the working directory on the remote server.
     
     Args:
         directory: The new working directory path.
@@ -89,6 +91,7 @@ async def change_remote_working_directory_tool(directory: str) -> str:
 async def change_local_working_directory_tool(directory: str) -> str:
     """
     Change the working directory on the local machine.
+    When you need to work with files locally, please ask the user to provide the working directory on the local machine.
     
     Args:
         directory: The new working directory path.
@@ -308,7 +311,6 @@ def search_material(
     """ 
     return qetool.search_material(**locals())
 
-
 @mcp.tool()
 def write_pw_input(
         mat_id: str,
@@ -497,6 +499,7 @@ async def load_pseudopotentials_ls_results(files: str) -> TextContent:
     """
     For a given string as output of the 'ls pseudopotential_folder',
     parse the string to get the pseudopotential files.
+    Pleas ask the user to provide the location of the pseudopotential files.
     
     Args:
         files: Output of 'ls directory_path'.
