@@ -15,7 +15,8 @@ ssh_config = {
     'username': None, 
     'key_path': None
 }
-WORK_DIR = "/global/cfs/cdirs/m4480/MCP_example"
+WORK_DIR_REMOTE = "/global/cfs/cdirs/m4480/MCP_example"
+WORK_DIR_LOCAL = "/Users/adawang/Documents/Physics/mcp/mcp_pykernel/workdir"
 
 # Set up logging (this just prints messages to your terminal for debugging)
 logging.basicConfig(
@@ -34,7 +35,8 @@ async def list_ssh_resources(config: str) -> list:
     return {
         "uri": "config",
         "SSH Configuration": ssh_config, 
-        "Remote Work Directory": WORK_DIR,
+        "Remote Work Directory": WORK_DIR_REMOTE,
+        "Local Work Directory": WORK_DIR_LOCAL
         }
 
 @mcp.tool()
@@ -53,7 +55,7 @@ async def ssh_info_init_tool(host: str, username: str, key_path: str) -> str:
     return ssh_info_init(ssh_config, host, username, key_path)
 
 @mcp.tool()
-async def change_working_directory_tool(directory: str) -> str:
+async def change_remote_working_directory_tool(directory: str) -> str:
     """
     Change the working directory on the remote server.
     
@@ -66,9 +68,27 @@ async def change_working_directory_tool(directory: str) -> str:
     if not os.path.isabs(directory):
         return "Error: The directory must be an absolute path."
     
-    global WORK_DIR
-    WORK_DIR = directory
-    return f"Working directory changed to {WORK_DIR}."
+    global WORK_DIR_REMOTE
+    WORK_DIR_REMOTE = directory
+    return f"Working directory changed to {WORK_DIR_REMOTE}."
+
+@mcp.tool()
+async def change_local_working_directory_tool(directory: str) -> str:
+    """
+    Change the working directory on the local machine.
+    
+    Args:
+        directory: The new working directory path.
+    
+    Returns:
+        A message indicating success or failure.
+    """
+    if not os.path.isabs(directory):
+        return "Error: The directory must be an absolute path."
+    
+    global WORK_DIR_LOCAL
+    WORK_DIR_LOCAL = directory
+    return f"Local working directory changed to {WORK_DIR_LOCAL}."
 
 @mcp.tool()
 async def run_ssh_command_tool(command: str, timeout: int = 30) -> dict:
@@ -88,6 +108,8 @@ async def run_ssh_command_tool(command: str, timeout: int = 30) -> dict:
         Exception: For any other errors during command execution.
     """
     return await run_ssh_command(ssh_config, command, timeout)
+
+
 
 @mcp.tool()
 async def set_slurm_defaults(
