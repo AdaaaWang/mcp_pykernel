@@ -13,7 +13,7 @@ from emmet.core.symmetry import CrystalSystem
 
 from enum import Enum
 
-from cmsagent.tools.qe_file_tools import parse_qe_output
+from cmsagent.tools.qe_file_tools import parse_pw_output
 
 # Create the MCP server object
 mcp = FastMCP()
@@ -452,7 +452,6 @@ def get_pseudopotential(elements: list) -> Dict:
         elename = ele.name
         jobpseudopotential[elename] = pseudopotentials[elename][0] # temp: use the first one
     return jobpseudopotential
-
 @mcp.tool()
 def parse_pw_output_tool(filename: str) -> str:
     """
@@ -464,7 +463,7 @@ def parse_pw_output_tool(filename: str) -> str:
     If no results are found, it returns a warning message with the file content.
     If results are found, it returns a dictionary with the results and convergence status.
     """
-    result = parse_qe_output(filename)
+    result = parse_pw_output(filename)
     return result
 
 def main():
