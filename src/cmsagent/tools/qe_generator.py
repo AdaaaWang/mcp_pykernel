@@ -11,11 +11,6 @@ from mp_api.client import MPRester
 from mcp.types import TextContent
 from emmet.core.symmetry import CrystalSystem
 
-<<<<<<< HEAD:src/cmsagent/tools/qe_generator.py
-from enum import Enum
-
-=======
->>>>>>> 22546686a71aa316df9a5c914fd3f9f90e9f6b09:src/cmsagent/qe_generator.py
 from cmsagent.tools.qe_file_tools import parse_pw_output
 
 # Create the MCP server object
