@@ -31,22 +31,8 @@ def ssh_info_init(
     return f"SSH configuration: {username}@{host} (key: {key_path})"
 
 
-async def run_ssh_command(ssh_config: dict, command: str, timeout: int = 30) -> dict:
-    """
-    Run a command on the remote server via SSH.
-    Please optimize the command to make the number of calls to this tool as few as possible.
-    If the system returns an error, please check the command and try again.
-    Do not try for more than 5 times, as this will cause the system to become unresponsive.
+async def run_ssh_command(ssh_config: dict,command: str, timeout: int = 30) -> dict:
 
-    Args:
-        command: bash command to execute on the remote server, in a string.
-        timeout: timeout (seconds), default is 30 seconds
-    Returns:
-        A dictionary containing the execution result, including success status, exit code, stdout, stderr, and command.
-    Raises:
-        asyncio.TimeoutError: If the command execution exceeds the specified timeout.
-        Exception: For any other errors during command execution.
-    """
     if not all([ssh_config['host'], ssh_config['username'], ssh_config['key_path']]):
         return {
             'success': False,

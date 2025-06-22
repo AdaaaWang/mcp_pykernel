@@ -7,7 +7,7 @@ import base64
 import subprocess
 import datetime
 
-from .tools.ssh_tools import ssh_info_init, run_ssh_command
+from cmsagent.tools.ssh_tools import ssh_info_init, run_ssh_command
 
 ssh_config = {
     'host': None,
@@ -25,16 +25,16 @@ logger = logging.getLogger(__name__)
 
 mcp = FastMCP()
 
-@mcp.resource()
-async def list_resources() -> list:
+@mcp.resource("ssh://{config}")
+async def list_ssh_resources(config: str) -> list:
     """
     List available resources for the MCP server.
     """
     return {
-        'SSH Configuration': ssh_config, 
-        'Remote Work Directory': WORK_DIR,
+        "uri": "config",
+        "SSH Configuration": ssh_config, 
+        "Remote Work Directory": WORK_DIR,
         }
-
 
 @mcp.tool()
 async def ssh_info_init_tool(host: str, username: str, key_path: str) -> str:
