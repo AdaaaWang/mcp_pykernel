@@ -8,6 +8,7 @@ import subprocess
 import datetime
 
 from cmsagent.tools.ssh_tools import ssh_info_init, run_ssh_command
+import cmsagent.tools.slurm_manager as slrumtool
 
 ssh_config = {
     'host': None,
@@ -88,6 +89,73 @@ async def run_ssh_command_tool(command: str, timeout: int = 30) -> dict:
     """
     return await run_ssh_command(ssh_config, command, timeout)
 
+@mcp.tool()
+async def set_slurm_defaults(
+    account: str,
+    **kwargs
+) -> TextContent:
+    """
+    Sets default Slurm configuration using key-value pairs.
+    'account' is required. Any other Slurm options can be passed as keyword arguments.
+    Example: set_slurm_defaults(account="m1234", queue="regular", constraint="gpu")
+
+    Args:
+        account: The Slurm account to charge (e.g., m1234).
+        **kwargs: Arbitrary key-value pairs for other Slurm defaults.
+
+    Returns:
+        A confirmation message summarizing all defaults set.
+    """
+    return slrumtool.set_slurm_defaults(account,**kwargs)
+
+@mcp.tool()
+async def add_slurm_defaults(
+    **kwargs
+) -> TextContent:
+    """
+    Adds or updates key-value pairs in the current Slurm configuration.
+    Does not clear existing settings.
+
+    Args:
+        **kwargs: One or more key-value pairs to add or update.
+                  For example: project_dir="/path/to/project", partition="gpu"
+
+    Returns:
+        A confirmation message summarizing the full, updated configuration.
+    """
+    return slrumtool.add_slurm_defaults(**kwargs)
+
+@mcp.tool()
+async def prepare_sbatch_script_perlmutter(
+    job_script_path: str,
+    modules: str,
+    nodes: int,
+    time_limit: str,
+) -> TextContent:
+    """
+    Prepares a sbatch script for user verification before submission.
+    If you want to create a slurm job file, use this funciton. Do not thry to do it yourself.
+    This tool DOES NOT submit the job.
+
+    Args:
+        job_script_path: The full path to the job script you want to run (e.g., /path/to/my_job.sh).
+            Is user asks for a  (Quantum Espresso)  QE job: srun pw.x $flags -input scf.in >& scf.out.$SLURM_JOB_ID with correct srun command.
+        modules: The modules to load for the job.
+            If QE job use:
+                module load espresso/7.0-libxc-5.2.2-cpu
+                export SLURM_CPU_BIND="cores"
+                export OMP_PROC_BIND=spread
+                export OMP_PLACES=threads
+                export OMP_NUM_THREADS=8
+                export HDF5_USE_FILE_LOCKING=FALSE
+        nodes: The number of nodes to request.
+        time_limit: The time limit for the job in HH:MM:SS format (e.g., "01:30:00").
+        
+
+    Returns:
+        A verification message and the full sbatch script content for the user to review.
+    """
+    return slrumtool.prepare_sbatch_script(job_script_path, modules, nodes, time_limit)
 
 # This is the main entry point for your server
 if __name__ == "__main__":
