@@ -205,7 +205,7 @@ async def prepare_sbatch_script_perlmutter(
             Is user asks for a  (Quantum Espresso)  QE job: srun pw.x $flags -input scf.in >& scf.out.$SLURM_JOB_ID with correct srun command.
         modules: The modules to load for the job.
             If QE job use:
-                module load espresso/7.0-libxc-5.2.2-cpu
+                module load espresso/7.3.1-libxc-6.2.2-cpu
                 export SLURM_CPU_BIND="cores"
                 export OMP_PROC_BIND=spread
                 export OMP_PLACES=threads
