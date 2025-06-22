@@ -42,9 +42,9 @@ async def ssh_info_init_tool(host: str, username: str, key_path: str) -> str:
     Initialize SSH connection configuration.
     
     Args:
-        host: Host address(e.g. perlmutter.nersc.gov)
+        host: Host address
         username: SSH username
-        key_path: SSH private key path (default ~/.ssh/nersc)
+        key_path: SSH private key path
     
     Returns:
         Connection status message.
