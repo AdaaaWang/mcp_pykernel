@@ -10,7 +10,7 @@ from pymatgen.symmetry.bandstructure import HighSymmKpath
 from ase.geometry.dimensionality import analyze_dimensionality
 from ase.io.espresso import write_espresso_in
 from mp_api.client import MPRester
-from mcp.types import TextContent
+from mcp.types import TextContent, ImageContent
 from emmet.core.symmetry import CrystalSystem
 
 from cmsagent.tools.qe_file_tools import parse_pw_output
