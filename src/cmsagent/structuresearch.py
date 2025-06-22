@@ -10,6 +10,8 @@ from emmet.core.symmetry import CrystalSystem
 
 from enum import Enum
 
+from cmsagent.tools.qe_file_tools import parse_qe_output
+
 # Create the MCP server object
 mcp = FastMCP()
 
@@ -392,6 +394,19 @@ def write_pw_input(
         crystal_coordinates=True,
     )
 
+@mcp.tool()
+def parse_pw_output_tool(filename: str) -> str:
+    """
+    Parse the Quantum ESPRESSO output file.
+    Args:
+        filename (str): Path to the Quantum ESPRESSO output file.
+    Returns:
+        tuple: A dictionary containing the success status, results, and convergence information.
+    If no results are found, it returns a warning message with the file content.
+    If results are found, it returns a dictionary with the results and convergence status.
+    """
+    result = parse_qe_output(filename)
+    return result
 
 def main():
     mcp.run('stdio')

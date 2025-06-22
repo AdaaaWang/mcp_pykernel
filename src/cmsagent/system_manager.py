@@ -7,7 +7,7 @@ from typing import Literal
 from cmsagent.tools.ssh_tools import ssh_info_init, run_ssh_command, run_scp_transfer
 import cmsagent.tools.slurm_manager as slrumtool
 
-ssh_config = {
+SSH_CONFIG = {
     'host': None,
     'username': None, 
     'key_path': None
@@ -31,7 +31,7 @@ async def list_ssh_resources(config: str) -> list:
     """
     return {
         "uri": "config",
-        "SSH Configuration": ssh_config, 
+        "SSH Configuration": SSH_CONFIG, 
         "Remote Work Directory": WORK_DIR_REMOTE,
         "Local Work Directory": WORK_DIR_LOCAL
         }
@@ -49,7 +49,7 @@ async def ssh_info_init_tool(host: str, username: str, key_path: str) -> str:
     Returns:
         Connection status message.
     """
-    return ssh_info_init(ssh_config, host, username, key_path)
+    return ssh_info_init(SSH_CONFIG, host, username, key_path)
 
 @mcp.tool()
 async def change_remote_working_directory_tool(directory: str) -> str:
@@ -104,7 +104,7 @@ async def run_ssh_command_tool(command: str, timeout: int = 30) -> dict:
         asyncio.TimeoutError: If the command execution exceeds the specified timeout.
         Exception: For any other errors during command execution.
     """
-    return await run_ssh_command(ssh_config, command, timeout)
+    return await run_ssh_command(SSH_CONFIG, command, timeout)
 
 @mcp.tool()
 async def run_scp_transfer_tool(
@@ -122,7 +122,7 @@ async def run_scp_transfer_tool(
         remote_path: The path to the remote file or directory.
         direction: 'upload' to send files to the remote server, 'download' to retrieve files from the remote server.
         recursive: Whether to transfer directories recursively (default is False).
-        timeout: Timeout for the SCP command in seconds (default is 30 seconds).
+        timeout: Timeout for the SCP command, in seconds (default is 30 seconds).
     
     Returns:
         A dictionary containing the transfer result, including success status, exit code, stdout, stderr, and command.
@@ -131,7 +131,7 @@ async def run_scp_transfer_tool(
         asyncio.TimeoutError: If the transfer exceeds the specified timeout.
         Exception: For any other errors during file transfer.
     """
-    return await run_scp_transfer(ssh_config, local_path, remote_path, direction, recursive, timeout)
+    return await run_scp_transfer(SSH_CONFIG, local_path, remote_path, direction, recursive, timeout)
 
 @mcp.tool()
 async def set_slurm_defaults(

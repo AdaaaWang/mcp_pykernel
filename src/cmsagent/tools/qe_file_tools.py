@@ -10,16 +10,7 @@ def check_scf_convergence(lines: list[str]) -> tuple[bool, int]:
             n_iter += 1
     return converged, n_iter
 
-def parse_qe_output(filename: str) -> tuple[bool, int]:
-    """
-    Parse the Quantum ESPRESSO output file.
-    Args:
-        filename (str): Path to the Quantum ESPRESSO output file.
-    Returns:
-        tuple: A dictionary containing the success status, results, and convergence information.
-    If no results are found, it returns a warning message with the file content.
-    If results are found, it returns a dictionary with the results and convergence status.
-    """
+def parse_pw_output(filename: str) -> tuple[bool, int]:
     with open(filename, 'r') as f:
         result_list = []
         text = f.read(10000)
