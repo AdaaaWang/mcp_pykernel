@@ -6,8 +6,9 @@ import logging
 import base64
 import subprocess
 import datetime
+from typing import Literal
 
-from cmsagent.tools.ssh_tools import ssh_info_init, run_ssh_command
+from cmsagent.tools.ssh_tools import ssh_info_init, run_ssh_command, run_scp_transfer
 import cmsagent.tools.slurm_manager as slrumtool
 
 ssh_config = {
@@ -109,7 +110,32 @@ async def run_ssh_command_tool(command: str, timeout: int = 30) -> dict:
     """
     return await run_ssh_command(ssh_config, command, timeout)
 
-
+@mcp.tool()
+async def run_scp_transfer_tool(
+    local_path: str,
+    remote_path: str,
+    direction: Literal["upload", "download"] = "upload",
+    recursive: bool = False,
+    timeout: int = 30
+) -> dict:
+    """
+    Transfer files between local and remote servers using SCP.
+    
+    Args:
+        local_path: The path to the local file or directory.
+        remote_path: The path to the remote file or directory.
+        direction: 'upload' to send files to the remote server, 'download' to retrieve files from the remote server.
+        recursive: Whether to transfer directories recursively (default is False).
+        timeout: Timeout for the SCP command in seconds (default is 30 seconds).
+    
+    Returns:
+        A dictionary containing the transfer result, including success status, exit code, stdout, stderr, and command.
+    
+    Raises:
+        asyncio.TimeoutError: If the transfer exceeds the specified timeout.
+        Exception: For any other errors during file transfer.
+    """
+    return await run_scp_transfer(ssh_config, local_path, remote_path, direction, recursive, timeout)
 
 @mcp.tool()
 async def set_slurm_defaults(
