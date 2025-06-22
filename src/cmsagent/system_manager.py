@@ -384,7 +384,8 @@ def write_pw_input(
         eopreg: float | None = None,
         edir: int | None = None,
         cell_dofree: str | None = None) -> str:
-    """ Write input for for the quantum espresso pw.x
+    """ Write input for for the quantum espresso pw.x. Please make sure you know which directory you are writing to.
+    If not, ask the user to provide the working directory on the local and remote server.
 
     Parameters
     ----------
