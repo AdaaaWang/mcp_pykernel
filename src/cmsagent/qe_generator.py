@@ -1,3 +1,4 @@
+import os
 from mcp.server.fastmcp import FastMCP
 from typing import Dict, TypeAlias
 
@@ -218,7 +219,6 @@ PWInputTypes: TypeAlias = str | float | int | bool
 def write_pw_input(
         mat_id: str,
         fname: str,
-        pseudofile: dict,
         prefix: str,
         kpt_sampling: list[int] | None = None,
         calculation: str = "scf",
@@ -396,33 +396,62 @@ def write_pw_input(
         new_dict = {key: item for key, item in tmp.items() if item is not None}
         return new_dict
     """
-
+    
     # Construct kpoint
     #if calculation == "vc-relax" or calculation == "relax":
     mat = mpr.materials.search(mat_id)[0]
     atoms = AseAtomsAdaptor.get_atoms(mat.structure)
-    if mode == "bands":
+    psep_dict = get_pseudopotential(mat.elements)
+    
+    if calculation == "bands":
         write_espresso_in(
             fname,
             atoms,
             locals(),
-            pseudopotentials=pseudofiles,
+            pseudopotentials=psep_dict,
             kpts=HighSymmKpath(mat.structure).kpath,
             crystal_coordinates=True,
         )
     else:
-        # Do uniform kpt sampling
         write_espresso_in(
             fname,
             atoms,
             locals(),
-            pseudopotentials=pseudofiles,
+            pseudopotentials=psep_dict,
             kpts=kpt_sampling,
             crystal_coordinates=True,
         )
-    return TextContent(type="text", text=os.path.join(os.getcwd(), filename))
+    return TextContent(type="text", text=os.path.join(os.getcwd(), fname))
 
+pseudopotentials: Dict[str, str] = {}
+@mcp.tool()
+async def load_pseudopotentials_ls_results(files: str) -> TextContent:
+    """
+    For a given string as output of the 'ls pseudopotential_folder',
+    parse the string to get the pseudopotential files.
     
+    Args:
+        files: Output of 'ls directory_path'.
+        e.g.: 
+        'Ag_ONCV_PBE-1.0.upf     Cl_ONCV_PBE-1.2.upf     Hg_ONCV_PBE-1.0.upf ...'
+    """
+    
+    for filename in files:
+        if filename.lower().endswith(".upf"):
+            element = filename.split('_')[0]
+            if not (element in pseudopotentials.keys()): # temp: load the first one.
+                pseudopotentials[element] = filename
+                count += 1
+    
+    success_msg = f"Successfully loaded {count} pseudopotentials from the directory."
+    return TextContent(type="text", text=success_msg)
+
+def get_pseudopotential(elements: list) -> Dict:
+    jobpseudopotential: Dict[str, str] = {}
+    for ele in elements:
+        elename = ele.name
+        jobpseudopotential[elename] = pseudopotentials[elename][0] # temp: use the first one
+    return jobpseudopotential
 
 @mcp.tool()
 def parse_pw_output_tool(filename: str) -> str:

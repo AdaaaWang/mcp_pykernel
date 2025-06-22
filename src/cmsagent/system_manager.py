@@ -191,7 +191,7 @@ async def prepare_sbatch_script_perlmutter(
 ) -> TextContent:
     """
     Prepares a sbatch script for user verification before submission.
-    If you want to create a slurm job file, use this funciton. Do not thry to do it yourself.
+    If you want to create a slurm job file, use this funciton. Do not try to do it yourself.
     This tool DOES NOT submit the job.
 
     Args:
