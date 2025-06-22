@@ -3,6 +3,8 @@ from mcp.server.fastmcp import FastMCP
 from typing import Dict, TypeAlias
 
 import os
+import io
+import base64
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.symmetry.bandstructure import HighSymmKpath
 from ase.geometry.dimensionality import analyze_dimensionality
@@ -12,6 +14,9 @@ from mcp.types import TextContent
 from emmet.core.symmetry import CrystalSystem
 
 from cmsagent.tools.qe_file_tools import parse_pw_output
+
+import matplotlib.pyplot as plt
+from ase.visualize.plot import plot_atoms
 
 # Create the MCP server object
 mcp = FastMCP()
@@ -450,6 +455,7 @@ def get_pseudopotential(elements: list) -> Dict:
         elename = ele.name
         jobpseudopotential[elename] = pseudopotentials[elename][0] # temp: use the first one
     return jobpseudopotential
+
 @mcp.tool()
 async def parse_pw_output_tool(filename: str) -> str:
     """
@@ -463,6 +469,46 @@ async def parse_pw_output_tool(filename: str) -> str:
     """
     result = parse_pw_output(filename)
     return result
+
+@mcp.tool()
+def plot_struct(mat_id: str, dir: int):
+    """
+    Plot the structure along direction
+
+    Parameters
+    ----------
+    mat_id : str
+        material id from the material project database.
+    dir : int
+        direction of camera 0 = x, 1 = y, 2 = z, 3 = rotate at (45,45,45)
+    """
+
+    mat = mpr.materials.search(mat_id)[0]
+    atoms = AseAtomsAdaptor.get_atoms(mat.structure)
+
+    if dir == 0:
+        rotation = "90x,0y,0z"
+    if dir == 1:
+        rotation = "0x,90y,0z"
+    if dir == 2:
+        rotation = "0x,0y,90z"
+    else:
+        rotation = "45x,45y,45z"
+
+    buf = io.BytesIO()
+    fig, ax = plt.subplots()
+    plot_atoms(atoms, ax=ax, rotation=rotation)
+    ax.set_axis_off()
+    
+    plt.savefig(buf, format='png')
+    img_bytes = buf.getvalue()
+    img_base64 = base64.b64encode(img_bytes).decode("utf-8")
+
+    return (
+        ImageContent(
+            type="image", data=img_base64, mimeType="image/png")
+    )
+
 
 def main():
     mcp.run('stdio')

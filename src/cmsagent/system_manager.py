@@ -505,6 +505,21 @@ async def load_pseudopotentials_ls_results(files: str) -> TextContent:
     """
     return qetool.load_pseudopotentials_ls_results(**locals())
 
+@mcp.tool()
+def plot_struct(mat_id: str, dir: int):
+    """
+    Plot the structure along direction
+
+    Parameters
+    ----------
+    mat_id : str
+        material id from the material project database.
+    dir : int
+        direction of camera 0 = x, 1 = y, 2 = z, 3 = rotate at (45,45,45)
+    """
+
+    return qetool.plot_struct(**locals())
+
 
 # This is the main entry point for your server
 if __name__ == "__main__":
