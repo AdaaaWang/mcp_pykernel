@@ -367,7 +367,7 @@ def write_pw_input(
     cell_dofree: str | None = None
 
 
-    Please search the pw.x document and insert input as necessary (leave them
+    Please search the pw.x documentation and insert input as necessary (leave them
     as None if there is no need to change). Ask user for input if there is
     something that is unclear.
     """
@@ -387,7 +387,7 @@ def write_pw_input(
         fname,
         atoms,
         locals(),
-        pseudopotentials=pseudofiles
+        pseudopotentials=pseudofiles,
         crystal_coordinates=True,
     )
 
