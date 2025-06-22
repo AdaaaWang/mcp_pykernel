@@ -399,13 +399,24 @@ def write_pw_input(
     #if calculation == "vc-relax" or calculation == "relax":
     mat = mpr.materials.search(mat_id)[0]
     atoms = AseAtomsAdaptor.get_atoms(mat.structure)
-    psep_dict = get_pseudopotential(mat.elements)
+    try:
+        psep_dict = get_pseudopotential(mat.elements)
+    except KeyError as e:
+        # The 'except' block catches the specific error and prints the helpful message.
+        error_message = f"Error: Could not prepare job. {e}"
+        return TextContent(type="text", text=error_message)
+    
+    # Get the dictionary of local variables
+    local_vars = locals()
+
+    # Filter out items where the value is None
+    filtered_locals = {key: value for key, value in local_vars.items() if (value is not None)}
     
     if calculation == "bands":
         write_espresso_in(
             fname,
             atoms,
-            locals(),
+            **filtered_locals,
             pseudopotentials=psep_dict,
             kpts=HighSymmKpath(mat.structure).kpath,
             crystal_coordinates=True,
@@ -414,7 +425,7 @@ def write_pw_input(
         write_espresso_in(
             fname,
             atoms,
-            locals(),
+            **filtered_locals,
             pseudopotentials=psep_dict,
             kpts=kpt_sampling,
             crystal_coordinates=True,
@@ -448,8 +459,9 @@ def get_pseudopotential(elements: list) -> Dict:
     jobpseudopotential: Dict[str, str] = {}
     for ele in elements:
         elename = ele.name
-        jobpseudopotential[elename] = pseudopotentials[elename][0] # temp: use the first one
+        jobpseudopotential[elename] = elename + "_ONCV_PBE-1.2.upf"
     return jobpseudopotential
+
 @mcp.tool()
 async def parse_pw_output_tool(filename: str) -> str:
     """

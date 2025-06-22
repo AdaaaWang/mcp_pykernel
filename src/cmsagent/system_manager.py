@@ -210,7 +210,6 @@ async def prepare_sbatch_script_perlmutter(
                 export HDF5_USE_FILE_LOCKING=FALSE
         nodes: The number of nodes to request.
         time_limit: The time limit for the job in HH:MM:SS format (e.g., "01:30:00").
-        
 
     Returns:
         A verification message and the full sbatch script content for the user to review.
@@ -390,8 +389,6 @@ def write_pw_input(
         material id from the material project database.
     fname : str
         Name of the quantum espresso input file to write
-    pseudofiles : dict[str, str]
-        Dictionary mapping element to the psedopotential file
     kpt_sampling : list(str), optional
         Uniform kpt sampling grid. Example: [3,4,5] is
         to have 3 kpts along x, 4 along y and 5 along z.
