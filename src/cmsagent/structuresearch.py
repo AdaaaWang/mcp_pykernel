@@ -1,3 +1,4 @@
+import os
 from mcp.server.fastmcp import FastMCP
 from typing import Dict, TypeAlias
 
@@ -215,7 +216,7 @@ def write_pw_input(
         mat_id: str,
         fname:str,
         prefix: str,
-        pseudofiles: dict,
+        # pseudofiles: dict,
         calculation: str = "scf",
         verbosity: str = "low",
         restart_mode: str = "from_scratch",
@@ -377,20 +378,50 @@ def write_pw_input(
         new_dict = {key: item for key, item in tmp.items() if item is not None}
         return new_dict
     """
-
+    
     # Construct kpoint
     #if calculation == "vc-relax" or calculation == "relax":
     mat = mpr.materials.search(mat_id)[0]
     atoms = AseAtomsAdaptor.get_atoms(mat.structure)
-    print(locals())
+    psep_dict = get_pseudopotential(mat.elements)
     write_espresso_in(
         fname,
         atoms,
         locals(),
-        pseudopotentials=pseudofiles
+        pseudopotentials=psep_dict,
         crystal_coordinates=True,
     )
 
+pseudopotentials: Dict[str, str] = {}
+@mcp.tool()
+async def load_pseudopotentials_ls_results(files: str) -> TextContent:
+    """
+    For a given string as output of the 'ls pseudopotential_folder',
+    parse the string to get the pseudopotential files.
+    
+    Args:
+        files: Output of 'ls directory_path'.
+        e.g.: 
+        'Ag_ONCV_PBE-1.0.upf     Cl_ONCV_PBE-1.2.upf     Hg_ONCV_PBE-1.0.upf ...'
+    """
+    
+    for filename in files:
+        if filename.lower().endswith(".upf"):
+            element = filename.split('_')[0]
+            if not (element in pseudopotentials.keys()): # temp: load the first one.
+                pseudopotentials[element] = filename
+                count += 1
+    
+    success_msg = f"Successfully loaded {count} pseudopotentials from the directory."
+    return TextContent(type="text", text=success_msg)
+
+def get_pseudopotential(elements: list) -> Dict:
+    jobpseudopotential: Dict[str, str] = {}
+    for ele in elements:
+        elename = ele.name
+        jobpseudopotential[elename] = pseudopotentials[elename][0] # temp: use the first one
+    return jobpseudopotential
+        
 
 def main():
     mcp.run('stdio')

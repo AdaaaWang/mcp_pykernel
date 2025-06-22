@@ -4,6 +4,8 @@ import logging
 from mcp.server.fastmcp import FastMCP
 from mcp.types import TextContent
 
+# YMS TODO: make this HPC/JOB management class instead of slurm job.
+
 # --- Global State ---
 # This dictionary will hold the Slurm default parameters for the current session.
 slurm_config: Dict[str, str] = {}
