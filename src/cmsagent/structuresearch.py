@@ -367,7 +367,8 @@ def write_pw_input(
     cell_dofree: str | None = None
 
 
-    Please search the pw.x documentation and insert input as necessary (leave them
+    Please search the pw.x documentation: https://www.quantum-espresso.org/Doc/INPUT_PW.html
+    and insert input as necessary (leave them
     as None if there is no need to change). Ask user for input if there is
     something that is unclear.
     """
@@ -396,5 +397,5 @@ def main():
     mcp.run('stdio')
 
 if __name__ == "__main__":
-    #main()
+    main()
     print("Ready")
