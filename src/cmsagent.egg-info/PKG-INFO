@@ -1,5 +1,5 @@
 Metadata-Version: 2.1
-Name: CMS-agent
+Name: cmsagent
 Version: 0.1.0
 Summary: Computational Materials Science Agent
 Requires-Dist: mcp

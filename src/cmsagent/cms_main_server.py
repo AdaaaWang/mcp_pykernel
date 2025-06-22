@@ -7,7 +7,7 @@ import base64
 import subprocess
 import datetime
 
-from tools.ssh_tools import ssh_info_init, run_ssh_command
+from .tools.ssh_tools import ssh_info_init, run_ssh_command
 
 ssh_config = {
     'host': None,
@@ -35,12 +35,9 @@ async def list_resources() -> list:
         'Remote Work Directory': WORK_DIR,
         }
 
+
 @mcp.tool()
-async def ssh_info_init_tool(
-    host: str,
-    username: str, 
-    key_path: str
-) -> str:
+async def ssh_info_init_tool(host: str, username: str, key_path: str) -> str:
     """
     Initialize SSH connection configuration.
     
@@ -50,7 +47,7 @@ async def ssh_info_init_tool(
         key_path: SSH private key path (default ~/.ssh/nersc)
     
     Returns:
-        Connection status message
+        Connection status message.
     """
     return ssh_info_init(ssh_config, host, username, key_path)
 
