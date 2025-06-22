@@ -52,6 +52,24 @@ async def ssh_info_init_tool(host: str, username: str, key_path: str) -> str:
     return ssh_info_init(ssh_config, host, username, key_path)
 
 @mcp.tool()
+async def change_working_directory_tool(directory: str) -> str:
+    """
+    Change the working directory on the remote server.
+    
+    Args:
+        directory: The new working directory path.
+    
+    Returns:
+        A message indicating success or failure.
+    """
+    if not os.path.isabs(directory):
+        return "Error: The directory must be an absolute path."
+    
+    global WORK_DIR
+    WORK_DIR = directory
+    return f"Working directory changed to {WORK_DIR}."
+
+@mcp.tool()
 async def run_ssh_command_tool(command: str, timeout: int = 30) -> dict:
     """
     Run a command on the remote server via SSH.
