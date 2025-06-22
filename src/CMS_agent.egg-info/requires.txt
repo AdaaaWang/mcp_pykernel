@@ -1,0 +1,6 @@
+mcp
+ase>=3.22.0
+pymatgen
+numpy>=1.7
+matplotlib
+importlib_resources

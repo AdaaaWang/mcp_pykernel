@@ -1,0 +1,5 @@
+parse_qe_output
+ssh_ops
+structuresearch
+tools
+tst
