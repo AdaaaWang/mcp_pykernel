@@ -1,4 +1,4 @@
-from ase.io.espresso import write_espresso_in, read_espresso_out
+from ase.io.espresso import read_espresso_out
 
 def check_scf_convergence(lines: list[str]) -> tuple[bool, int]:
     converged = False
