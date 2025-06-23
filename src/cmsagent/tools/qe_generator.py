@@ -515,10 +515,7 @@ def plot_struct(mat_id: str, dir: int):
     img_bytes = buf.getvalue()
     img_base64 = base64.b64encode(img_bytes).decode("utf-8")
 
-    return (
-        ImageContent(
-            type="image", data=img_base64, mimeType="image/png")
-    )
+    return ImageContent(type="image", data=img_base64, mimeType="image/png")
 
 
 def main():
